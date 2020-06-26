@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Websocket-Demo</title>
+</head>
+
+<body>
+  <h1 class="title">my-cm#/portal</h1>
+  <p>Logged in thru CSAM, req.session.fasUserInfo is available on this page.<br>
+    User needs to confirm email from link in mail which opens in new tab (no req.session)<br>
+    Simulate email confirmation by going to localhost:3000/confirm in a different tab or window.
+  </p>
+  <div class="box">WebSocket: <span id="message"></span></div>
+  <script>
+    var HOST = 'ws://' + window.location.hostname + ':5000/foo';
+    console.log(HOST);
+    var ws = new WebSocket(HOST);
+    var email = 'bob@ross.com';
+    var el;
+
+    ws.onopen = () => console.log('Connected!');
+
+    // window.addEventListener('keydown', e => {
+    //   let kc = e.which || e.keyCode;
+    //   if (kc === 13) {
+    //     ws.send('Hi there');
+    //   }
+    // });
+
+    ws.onmessage = function (event) {
+      el = document.getElementById('message');
+      console.log(event.data);
+      if (event.data && event.data === email) {
+        el.innerHTML = `${event.data} is confirmed.`;
+        ws.close(1000, 'Response received');
+      }
+    };
+
+    ws.onclose = function (event) {
+      console.log('CLOSED!');
+    };
+  </script>
+</body>
+
+</html>
